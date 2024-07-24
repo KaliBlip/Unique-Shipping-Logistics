@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Tracking Dashboard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn {
+            width: 100px;
+            margin: 5px;
+        }
+
+        .form-control {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Parcel Tracking Dashboard</h1>
+        <form id="parcelForm">
+            <div class="form-group">
+                <label for="TrackingIdInp">Tracking ID</label>
+                <input type="text" class="form-control" id="TrackingIdInp" placeholder="Enter Tracking ID">
+            </div>
+
+            <div class="form-group">
+                <label for="ParcelNameInp">Name of Parcel</label>
+                <input type="text" class="form-control" id="ParcelNameInp" placeholder="Enter Parcel Name">
+            </div>
+
+            <div class="form-group">
+                <label for="SourceInp">Source</label>
+                <input type="text" class="form-control" id="SourceInp" placeholder="Enter Source">
+            </div>
+
+            <div class="form-group">
+                <label for="DestinationInp">Destination</label>
+                <input type="text" class="form-control" id="DestinationInp" placeholder="Enter Destination">
+            </div>
+
+            <div class="form-group">
+                <label for="StatusInp">Status</label>
+                <select class="form-control" id="StatusInp">
+                    <option value="Pending">Pending</option>
+                    <option value="In Transit">In Transit</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="DispatchDateInp">Date of Dispatch</label>
+                <input type="date" class="form-control" id="DispatchDateInp">
+            </div>
+
+            <div class="form-group">
+                <label for="DeliveryDateInp">Estimated Delivery Date</label>
+                <input type="date" class="form-control" id="DeliveryDateInp">
+            </div>
+
+            <div class="form-group">
+                <label for="CurrentLocationInp">Current Location</label>
+                <input type="text" class="form-control" id="CurrentLocationInp" placeholder="Enter Current Location">
+            </div>
+
+            <div class="form-group">
+                <label for="WeightInp">Weight (kg)</label>
+                <input type="number" class="form-control" id="WeightInp" placeholder="Enter Weight">
+            </div>
+
+            <div class="form-group">
+                <label for="DimensionsInp">Dimensions (LxWxH cm)</label>
+                <input type="text" class="form-control" id="DimensionsInp" placeholder="Enter Dimensions">
+            </div>
+
+            <div class="form-group text-center">
+                <button type="button" class="btn btn-primary" id="AddBtn">Add</button>
+                <button type="button" class="btn btn-secondary" id="RetBtn">Retrieve</button>
+                <button type="button" class="btn btn-info" id="UpdBtn">Update</button>
+                <button type="button" class="btn btn-danger" id="DelBtn">Delete</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+        import { getDatabase, ref, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
+            authDomain: "unique-logistix.firebaseapp.com",
+            databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
+            projectId: "unique-logistix",
+            storageBucket: "unique-logistix.appspot.com",
+            messagingSenderId: "820421076514",
+            appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
+            measurementId: "G-6Q2RY0LM09"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        // const analytics = getAnalytics(app); // Uncomment if analytics are needed
+        const db = getDatabase();
+
+        const TrackingIdInp = document.getElementById('TrackingIdInp');
+        const ParcelNameInp = document.getElementById('ParcelNameInp');
+        const SourceInp = document.getElementById('SourceInp');
+        const DestinationInp = document.getElementById('DestinationInp');
+        const StatusInp = document.getElementById('StatusInp');
+        const DispatchDateInp = document.getElementById('DispatchDateInp');
+        const DeliveryDateInp = document.getElementById('DeliveryDateInp');
+        const CurrentLocationInp = document.getElementById('CurrentLocationInp');
+        const WeightInp = document.getElementById('WeightInp');
+        const DimensionsInp = document.getElementById('DimensionsInp');
+
+        const AddBtn = document.getElementById('AddBtn');
+        const RetBtn = document.getElementById('RetBtn');
+        const UpdBtn = document.getElementById('UpdBtn');
+        const DelBtn = document.getElementById('DelBtn');
+
+        function AddData() {
+            set(ref(db, 'ParcelSet/' + TrackingIdInp.value), {
+                trackingId: TrackingIdInp.value,
+                nameOfParcel: ParcelNameInp.value,
+                source: SourceInp.value,
+                destination: DestinationInp.value,
+                status: StatusInp.value,
+                dispatchDate: DispatchDateInp.value,
+                deliveryDate: DeliveryDateInp.value,
+                currentLocation: CurrentLocationInp.value,
+                weight: Number(WeightInp.value),
+                dimensions: DimensionsInp.value
+            })
+                .then(() => {
+                    alert("Data Added Successfully");
+                })
+                .catch((error) => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                });
+        }
+
+        function RetData() {
+            const dbRef = ref(db);
+            get(child(dbRef, 'ParcelSet/' + TrackingIdInp.value)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    TrackingIdInp.value = snapshot.val().trackingId;
+                    ParcelNameInp.value = snapshot.val().nameOfParcel;
+                    SourceInp.value = snapshot.val().source;
+                    DestinationInp.value = snapshot.val().destination;
+                    StatusInp.value = snapshot.val().status;
+                    DispatchDateInp.value = snapshot.val().dispatchDate;
+                    DeliveryDateInp.value = snapshot.val().deliveryDate;
+                    CurrentLocationInp.value = snapshot.val().currentLocation;
+                    WeightInp.value = snapshot.val().weight;
+                    DimensionsInp.value = snapshot.val().dimensions;
+                } else {
+                    alert("Parcel does not exist");
+                }
+            })
+                .catch((error) => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                });
+        }
+
+        function UpdateData() {
+            update(ref(db, 'ParcelSet/' + TrackingIdInp.value), {
+                nameOfParcel: ParcelNameInp.value,
+                source: SourceInp.value,
+                destination: DestinationInp.value,
+                status: StatusInp.value,
+                dispatchDate: DispatchDateInp.value,
+                deliveryDate: DeliveryDateInp.value,
+                currentLocation: CurrentLocationInp.value,
+                weight: Number(WeightInp.value),
+                dimensions: DimensionsInp.value
+            })
+                .then(() => {
+                    alert("Data Updated Successfully");
+                })
+                .catch((error) => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                });
+        }
+
+        function DeleteData() {
+            remove(ref(db, 'ParcelSet/' + TrackingIdInp.value))
+                .then(() => {
+                    alert("Data Deleted Successfully");
+                })
+                .catch((error) => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                });
+        }
+
+        AddBtn.addEventListener('click', AddData);
+        RetBtn.addEventListener('click', RetData);
+        UpdBtn.addEventListener('click', UpdateData);
+        DelBtn.addEventListener('click', DeleteData);
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Tracking</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link type="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .form-group label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .btn {
+            width: 150px;
+            margin: 10px;
+        }
+
+        .form-control {
+            font-size: 16px;
+        }
+
+        .result-container {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .status-card {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .status-card h3 {
+            font-weight: bold;
+        }
+
+        .status-card .status {
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Track Your Parcel</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <form id="trackingForm">
+                        <div class="form-group">
+                            <label for="TrackingIdInp">Tracking Number</label>
+                            <input type="text" class="form-control" id="TrackingIdInp"
+                                placeholder="Enter Tracking Number">
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="button" class="btn btn-primary" id="TrackBtn">Track</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultContainer" class="result-container"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
+            authDomain: "unique-logistix.firebaseapp.com",
+            databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
+            projectId: "unique-logistix",
+            storageBucket: "unique-logistix.appspot.com",
+            messagingSenderId: "820421076514",
+            appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
+            measurementId: "G-6Q2RY0LM09"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        const TrackingIdInp = document.getElementById('TrackingIdInp');
+        const TrackBtn = document.getElementById('TrackBtn');
+        const resultContainer = document.getElementById('resultContainer');
+
+        TrackBtn.addEventListener('click', () => {
+            const trackingId = TrackingIdInp.value.trim();
+
+            if (trackingId) {
+                resultContainer.innerHTML = "<p>Loading...</p>";
+                const query = ref(db, 'ParcelSet/' + trackingId);
+
+                get(query).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        displayResult(snapshot.val());
+                    } else {
+                        resultContainer.innerHTML = "<p>No parcel found with the given Tracking ID.</p>";
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                    resultContainer.innerHTML = "<p>Error fetching data.</p>";
+                });
+            } else {
+                resultContainer.innerHTML = "<p>Please enter a Tracking Number.</p>";
+            }
+        });
+
+        function displayResult(parcel) {
+            resultContainer.innerHTML = `
+                <div class="status-card card">
+                    <h3>Scheduled Delivery Date: <span class="status">${parcel.deliveryDate || 'Pending'}</span></h3>
+                    <h3>Delivery Status: <span class="status">${parcel.status}</span></h3>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="result-item"><strong>Tracking ID:</strong> ${parcel.trackingId}</div>
+
+                        <div class="result-item"><strong>Name of Parcel:</strong> ${parcel.nameOfParcel}</div>
+
+                        <div class="result-item"><strong>Source:</strong> ${parcel.source}</div>
+
+                        <div class="result-item"><strong>Destination:</strong> ${parcel.destination}</div>
+
+                        <div class="result-item"><strong>Current Location:</strong> ${parcel.currentLocation}</div>
+
+                        <div class="result-item"><strong>Date of Dispatch:</strong> ${parcel.dispatchDate}</div>
+
+                        <div class="result-item"><strong>Estimated Delivery Date:</strong> ${parcel.deliveryDate || 'Pending'}</div>
+
+                        <div class="result-item"><strong>Weight (kg):</strong> ${parcel.weight}</div>
+
+                        <div class="result-item"><strong>Dimensions (LxWxH cm):</strong> ${parcel.dimensions}</div>
+
+                    </div>
+                    
+                </div>
+            `;
+        }
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

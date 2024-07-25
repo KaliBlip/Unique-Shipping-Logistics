@@ -108,7 +108,7 @@
                 document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
 
                 // Show/hide alert sections based on data
-                document.getElementById('alertSuccess').style.display = data.alert === 'success' ? 'block' : 'none';
+                // document.getElementById('alertSuccess').style.display = data.alert === 'success' ? 'block' : 'none';
                 document.getElementById('alertDanger').style.display = data.alert === 'danger' ? 'block' : 'none';
             } else {
                 console.log('No data available');

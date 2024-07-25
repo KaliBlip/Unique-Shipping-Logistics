@@ -38,8 +38,10 @@
                     <div id="stepFrom" class="step from">From</div>
                     <div id="stepReceived" class="step package-received" ><b>Package received by UNIQUE<sup>®</sup>Tracking</b></div>
                     <div id="transitDetails" class="step transit">
+                        <b>
                         <span>In Transit</span>
-                        <span>At FedEx destination facility<br>BRIDGEPORT, WV<br>12/11/2022 5:36 AM</span>
+                        <span><b>At UNIQUE SHIPPING destination facility</b><br><b>BRIDGEPORT, WV</b><br>12/11/2024 5:36 AM</span>
+                        </b>
                     </div>
                     <div id="stepOutForDelivery" class="step out-for-delivery">Out for Delivery</div>
                     <div id="stepTo" class="step to">To</div>
@@ -98,7 +100,7 @@
                 document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
                 document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
                 document.getElementById('stepFrom').textContent = `From: ${data.source || 'Unknown'}`;
-                document.getElementById('stepReceived').textContent = `Package received by ${data.carrier || 'Carrier'}`;
+                document.getElementById('stepReceived').textContent = `Package received by <b>${data.carrier || 'Carrier'}</b>`;
                 document.getElementById('transitDetails').innerHTML = `In Transit: ${data.currentLocation || 'Unknown'}<br>${data.lastUpdate || 'Enroute'}`;
                 document.getElementById('stepOutForDelivery').textContent = `Out for Delivery: ${data.expectedDelivery || 'Pending'}`;
                 document.getElementById('stepTo').textContent = `To: ${data.destination || 'Unknown'}`;

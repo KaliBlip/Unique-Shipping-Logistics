@@ -125,7 +125,7 @@
                 document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
                 document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
                 document.getElementById('stepFrom').textContent = `From: ${data.source || 'Unknown'}`;
-                document.getElementById('stepReceived').textContent = `Package received by <b>${data.carrier || 'Carrier'}</b>`;
+                document.getElementById('stepReceived').textContent = `Package received by ${data.carrier || 'Carrier'}`;
                 document.getElementById('transitDetails').innerHTML = `In Transit: ${data.currentLocation || 'Unknown'}<br>${data.lastUpdate || 'Enroute'}`;
                 document.getElementById('stepOutForDelivery').textContent = `Out for Delivery: ${data.expectedDelivery || 'Pending'}`;
                 document.getElementById('stepTo').textContent = `To: ${data.destination || 'Unknown'}`;

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FedEx Tracking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="tracking-container">
+        <header>
+            <h1>Unique<sup>®</sup> Tracking</h1>
+            <div class="header-links">
+                <a href="/index.html" class="track-another">Track Another Shipment</a>
+                <a href="/contact.html" class="help">Help</a>
+            </div>
+        </header>
+        <main>
+            <div class="delivery-info">
+                <div class="status">
+                    <div>
+                        <span class="label">Scheduled Delivery Date</span>
+                        <span id="scheduledDeliveryDate" class="date pending">Pending</span>
+                    </div>
+                    <span id="deliveryStatus" class="delivery-status">In Transit</span>
+                </div>
+                <div class="tracking-id">
+                    <div>
+                        <span>Tracking ID</span>
+                        <span id="trackingId" class="id-number"></span>
+                    </div>
+                    <div class="icons">
+                        <a href="/index.html">✏️</a>
+                        <a href="#">⭐</a>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div id="stepFrom" class="step from">From</div>
+                    <div id="stepReceived" class="step package-received" ><b>Package received by UNIQUE<sup>®</sup>Tracking</b></div>
+                    <div id="transitDetails" class="step transit">
+                        <span>In Transit</span>
+                        <span>At FedEx destination facility<br>BRIDGEPORT, WV<br>12/11/2022 5:36 AM</span>
+                    </div>
+                    <div id="stepOutForDelivery" class="step out-for-delivery">Out for Delivery</div>
+                    <div id="stepTo" class="step to">To</div>
+                    <div id="scheduledDate" class="scheduled-date pending">Scheduled Delivery Date: Pending</div>
+                </div>
+                <div id="alertSuccess" class="alert-success">
+                    <div class="alert-title">Alerts (1)</div>
+                    <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
+                </div> 
+                <div id="alertDanger" class="alert-danger">
+                    <div class="alert-title">Alerts (1)</div>
+                    <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
+                </div>
+            </div>
+            <div class="view-travel-history">
+                <a href="#">View travel history</a>
+            </div>
+        </main>
+    </div>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
+        authDomain: "unique-logistix.firebaseapp.com",
+        databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
+        projectId: "unique-logistix",
+        storageBucket: "unique-logistix.appspot.com",
+        messagingSenderId: "820421076514",
+        appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
+        measurementId: "G-6Q2RY0LM09"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+
+    // Function to get the tracking ID from the URL
+    function getTrackingIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('trackingId');
+    }
+
+    const trackingId = getTrackingIdFromURL(); // Get the tracking ID from the URL
+
+    function updateTrackingInfo() {
+        const dbRef = ref(db, 'shipments/' + trackingId);
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+
+                // Update DOM elements with Firebase data
+                document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate || 'Pending';
+                document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
+                document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
+                document.getElementById('stepFrom').textContent = `From: ${data.source || 'Unknown'}`;
+                document.getElementById('stepReceived').textContent = `Package received by ${data.carrier || 'Carrier'}`;
+                document.getElementById('transitDetails').innerHTML = `In Transit: ${data.currentLocation || 'Unknown'}<br>${data.lastUpdate || 'Enroute'}`;
+                document.getElementById('stepOutForDelivery').textContent = `Out for Delivery: ${data.expectedDelivery || 'Pending'}`;
+                document.getElementById('stepTo').textContent = `To: ${data.destination || 'Unknown'}`;
+                document.getElementById('scheduledDate').textContent = `Scheduled Delivery Date: ${data.dispatchDate || 'Pending'}`;
+                document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
+
+                // Show/hide alert sections based on data
+                document.getElementById('alertSuccess').style.display = data.alert === 'success' ? 'block' : 'none';
+                document.getElementById('alertDanger').style.display = data.alert === 'danger' ? 'block' : 'none';
+            } else {
+                console.log('No data available');
+            }
+        }).catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    if (trackingId) {
+        updateTrackingInfo();
+    } else {
+        console.error('No tracking ID provided');
+    }
+</script>
+</html>

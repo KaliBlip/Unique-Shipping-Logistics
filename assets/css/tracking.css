@@ -83,6 +83,7 @@ header .header-links a:hover {
     border-radius: 10px;
     margin-bottom: 15px;
     flex-wrap: wrap;
+    font-size: large;
 }
 
 .tracking-id .id-number {
@@ -160,7 +161,7 @@ header .header-links a:hover {
 }
 .alert-success {
     margin-top: 20px;
-    background-color: #4b9d48;
+    background-color: #2ccb2c;
     padding: 10px;
     border-radius: 10px;
 }

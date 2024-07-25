@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FedEx Tracking</title>
     <link rel="stylesheet" href="/assets/css/tracking.css">
 </head>
+
 <body>
     <div class="tracking-container">
         <header>
@@ -22,11 +24,12 @@
                         <span class="label">Scheduled Delivery Date</span>
                         <span id="scheduledDeliveryDate" class="date pending">Pending</span>
                     </div>
-                    <span id="deliveryStatus" class="delivery-status">In Transit</span>
+                    <span id="deliveryStatus" class="delivery-status" style="color: rgb(8, 173, 8); font-size: larger;"><b>In
+                            Transit</b></span>
                 </div>
                 <div class="tracking-id">
                     <div>
-                        <span>Tracking ID</span>
+                        <b> <span>Tracking ID</span></b>
                         <span id="trackingId" class="id-number"></span>
                     </div>
                     <div class="icons">
@@ -35,22 +38,44 @@
                     </div>
                 </div>
                 <div class="progress">
-                    <div id="stepFrom" class="step from">From</div>
-                    <div id="stepReceived" class="step package-received" ><b>Package received by UNIQUE<sup>®</sup>Tracking</b></div>
+                    <div id="stepFrom" class="step from"><b>From</b></div>
+                    <div id="stepReceived" class="step package-received"><b>Package received by
+                            UNIQUE<sup>®</sup>Tracking</b></div>
                     <div id="transitDetails" class="step transit">
-                        <b>
-                        <span>In Transit</span>
-                        <span><b>At UNIQUE SHIPPING destination facility</b><br><b>BRIDGEPORT, WV</b><br>12/11/2024 5:36 AM</span>
-                        </b>
+                        <!-- <b>
+                            <span>In Transit</span>
+                        </b> -->
+                        <!-- <span><b>At UNIQUE SHIPPING destination facility</b><br>BRIDGEPORT, WV<br>12/11/2024 5:36
+                            AM</span> -->
+
+                        <div id="alertSuccess" class="alert-success">
+                            <div class="alert-title"> <b>
+                                    <span>In Transit</span>
+                                </b>
+                            </div>
+                            <div id="alertInfo" class="alert-info"> <span><b>At UNIQUE SHIPPING destination
+                                        facility</b><br>BRIDGEPORT, WV<br>12/11/2024 5:36
+                                    AM</span></div>
+                        </div>
+
                     </div>
-                    <div id="stepOutForDelivery" class="step out-for-delivery">Out for Delivery</div>
-                    <div id="stepTo" class="step to">To</div>
+                    <div id="stepOutForDelivery" class="step out-for-delivery">
+                        <!-- Out for Delivery -->
+                        <div id="alertSuccess" class="alert-success">
+                            <div class="alert-title"> Out for Delivery
+                            </div>
+                            <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.
+                            </div>
+                        </div>
+                    </div>
+                    <div id="stepTo" class="step to"><b>To</b></div>
                     <div id="scheduledDate" class="scheduled-date pending">Scheduled Delivery Date: Pending</div>
                 </div>
+                <br>
                 <div id="alertSuccess" class="alert-success">
                     <div class="alert-title">Alerts (1)</div>
                     <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
-                </div> 
+                </div>
                 <div id="alertDanger" class="alert-danger">
                     <div class="alert-title">Alerts (1)</div>
                     <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
@@ -109,7 +134,7 @@
 
                 // Show/hide alert sections based on data
                 // document.getElementById('alertSuccess').style.display = data.alert === 'success' ? 'block' : 'none';
-                document.getElementById('alertDanger').style.display = data.alert === 'danger' ? 'block' : 'none';
+                // document.getElementById('alertDanger').style.display = data.alert === 'danger' ? 'block' : 'none';
             } else {
                 console.log('No data available');
             }
@@ -124,4 +149,5 @@
         console.error('No tracking ID provided');
     }
 </script>
+
 </html>

@@ -591,12 +591,11 @@
     <!--//footer-9 -->
 
    <!-- JavaScript -->
-<script type="module">
-    // Import the functions you need from the SDKs you need
+   <script type="module">
+    // Firebase configuration and initialization code remains the same
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
         authDomain: "unique-logistix.firebaseapp.com",
@@ -612,34 +611,56 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase();
 
-    document.getElementById('trackingForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form from submitting normally
-        const trackingCode = document.getElementById('trackingCode').value;
-        const errorMessage = document.getElementById('errorMessage');
-        
-        if (trackingCode) {
-            // Check if the tracking code exists in the database
-            const trackingRef = ref(db, 'shipments/' + trackingCode);
-            get(trackingRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    // Tracking code exists, redirect to tracking page
-                    window.location.href = `/modernTrack.html?trackingId=${trackingCode}`;
-                } else {
-                    // Tracking code doesn't exist, show error message
-                    errorMessage.textContent = "Invalid tracking code. Please try again.";
-                    errorMessage.style.display = "block";
-                }
-            }).catch((error) => {
-                console.error(error);
-                errorMessage.textContent = "An error occurred. Please try again later.";
-                errorMessage.style.display = "block";
-            });
-        } else {
-            errorMessage.textContent = "Please enter a tracking code.";
-            errorMessage.style.display = "block";
-        }
-    });
+    function getTrackingIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('trackingId');
+    }
+
+    const trackingId = getTrackingIdFromURL();
+
+    function updateTrackingInfo(trackingId) {
+        const dbRef = ref(db, 'shipments/' + trackingId);
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate ?? 'Pending';
+                document.getElementById('deliveryStatus').textContent = data.status ?? 'In Transit';
+                document.getElementById('trackingId').textContent = data.trackingId ?? '123456789012';
+                document.getElementById('stepFrom').textContent = data.source ?? 'From';
+                document.getElementById('stepTo').textContent = data.destination ?? 'To';
+                document.getElementById('alertInfo').textContent = data.alert ?? 'No alerts available';
+
+                // Update progress bar based on status
+                const steps = ['stepFrom', 'stepReceived', 'transitDetails', 'stepOutForDelivery', 'stepTo'];
+                const currentStep = steps.indexOf(data.status ?? 'In Transit') + 1;
+                steps.forEach((step, index) => {
+                    const element = document.getElementById(step)?.parentElement;
+                    if (element) {
+                        if (index < currentStep) {
+                            element.classList.add('active');
+                        } else {
+                            element.classList.remove('active');
+                        }
+                    }
+                });
+
+                document.getElementById('alertSuccess').style.display = data.alert ? 'block' : 'none';
+            } else {
+                console.log('No data available');
+            }
+        }).catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    if (trackingId) {
+        updateTrackingInfo(trackingId);
+    } else {
+        console.error('No tracking ID provided. Using default ID for testing.');
+        updateTrackingInfo('defaultTrackingId');
+    }
 </script>
+
 
 
 

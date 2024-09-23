@@ -132,7 +132,7 @@
                     <label for="CurrentLocationInp"><i class="fas fa-map-pin mr-2"></i>Current Location</label>
                     <input type="text" class="form-control" id="CurrentLocationInp"
                         placeholder="Enter current location">
-                        
+
                 </div>
                 <div class="form-group col-md-6">
                     <label for="LastUpdateInp"><i class="fas fa-clock mr-2"></i>Last Update</label>
@@ -193,15 +193,16 @@
             get(dbRef).then((snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate || 'Pending';
-                    document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
-                    document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
-                    document.getElementById('stepFrom').textContent = data.source || 'From';
-                    document.getElementById('stepReceived').textContent = 'Received';
-                    document.getElementById('transitDetails').textContent = 'In Transit';
-                    document.getElementById('stepOutForDelivery').textContent = 'Out for Delivery';
-                    document.getElementById('stepTo').textContent = data.destination || 'To';
-                    document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
+                    document.getElementById('TrackingIdInp').value = data.trackingId || '';
+                    document.getElementById('SourceInp').value = data.source || '';
+                    document.getElementById('DestinationInp').value = data.destination || '';
+                    document.getElementById('StatusInp').value = data.status || '';
+                    document.getElementById('DispatchDateInp').value = data.dispatchDate || '';
+                    document.getElementById('DeliveryDateInp').value = data.estimatedDeliveryDate || '';
+                    document.getElementById('CurrentLocationInp').value = data.currentLocation || '';
+                    document.getElementById('LastUpdateInp').value = data.lastUpdate || '';
+                    document.getElementById('WeightInp').value = data.weight || '';
+                    document.getElementById('DimensionsInp').value = data.dimensions || '';
 
                     // Update progress bar based on status
                     const steps = ['stepFrom', 'stepReceived', 'transitDetails', 'stepOutForDelivery', 'stepTo'];

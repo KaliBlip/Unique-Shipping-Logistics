@@ -1,153 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FedEx Tracking</title>
-    <link rel="stylesheet" href="/assets/css/tracking.css">
+    <title>Unique® Tracking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #800080;
+            color: white;
+            padding: 20px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        main {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            padding: 30px;
+        }
+        .tracking-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            font-size: 18px;
+        }
+        .delivery-date {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .tracking-number {
+            font-size: 18px;
+        }
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+        }
+        .step.active .step-icon {
+            background-color: #800080;
+            color: white;
+        }
+        .step-label {
+            font-size: 14px;
+        }
+        .alert {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .travel-history {
+            text-align: right;
+        }
+        .travel-history a {
+            color: #800080;
+            text-decoration: none;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="tracking-container">
-        <header>
-            <h1>Unique<sup>®</sup> Tracking</h1>
-            <div class="header-links">
-                <a href="/index.html" class="track-another">Track Another Shipment</a>
-                <a href="/contact.html" class="help">Help</a>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Unique<sup>®</sup> Tracking</div>
+                <div class="header-links">
+                    <a href="/index.html">Track Another Shipment</a>
+                    <a href="/contact.html">Help</a>
+                </div>
             </div>
-        </header>
+        </div>
+    </header>
+    <div class="container">
         <main>
-            <div class="delivery-info">
-                <div class="status">
-                    <div>
-                        <span class="label">Scheduled Delivery Date</span>
-                        <span id="scheduledDeliveryDate" class="date pending">Pending</span>
-                    </div>
-                    <span id="deliveryStatus" class="delivery-status" style="color: rgb(8, 173, 8); font-size: larger;"><b>In
-                            Transit</b></span>
+            <div class="tracking-info">
+                <div>
+                    <div class="status" id="deliveryStatus">In Transit</div>
+                    <div class="delivery-date" id="scheduledDeliveryDate">Pending</div>
                 </div>
-                <div class="tracking-id">
-                    <div>
-                        <b> <span>Tracking ID</span></b>
-                        <span id="trackingId" class="id-number"></span>
-                    </div>
-                    <div class="icons">
-                        <a href="/index.html">✏️</a>
-                        <a href="#">⭐</a>
-                    </div>
-                </div>
-                <div class="progress">
-                    <div id="stepFrom" class="step from"><b>From</b></div>
-                    <div id="stepReceived" class="step package-received"><b>Package received by
-                            UNIQUE<sup>®</sup>Tracking</b></div>
-                    <div id="transitDetails" class="step transit">
-                        <!-- <b>
-                            <span>In Transit</span>
-                        </b> -->
-                        <!-- <span><b>At UNIQUE SHIPPING destination facility</b><br>BRIDGEPORT, WV<br>12/11/2024 5:36
-                            AM</span> -->
-
-                        <div id="alertSuccess" class="alert-success">
-                            <div class="alert-title"> <b>
-                                    <span>In Transit</span>
-                                </b>
-                            </div>
-                            <div id="alertInfo" class="alert-info"> <span><b>At UNIQUE SHIPPING destination
-                                        facility</b><br>BRIDGEPORT, WV<br>12/11/2024 5:36
-                                    AM</span></div>
-                        </div>
-
-                    </div>
-                    <div id="stepOutForDelivery" class="step out-for-delivery">
-                        <!-- Out for Delivery -->
-                        <div id="alertSuccess" class="alert-success">
-                            <div class="alert-title"> Out for Delivery
-                            </div>
-                            <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.
-                            </div>
-                        </div>
-                    </div>
-                    <div id="stepTo" class="step to"><b>To</b></div>
-                    <div id="scheduledDate" class="scheduled-date pending">Scheduled Delivery Date: Pending</div>
-                </div>
-                <br>
-                <div id="alertSuccess" class="alert-success">
-                    <div class="alert-title">Alerts (1)</div>
-                    <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
-                </div>
-                <div id="alertDanger" class="alert-danger">
-                    <div class="alert-title">Alerts (1)</div>
-                    <div id="alertInfo" class="alert-info">No scheduled delivery date available at this time.</div>
+                <div class="tracking-number">
+                    Tracking Number: <span id="trackingId"></span>
                 </div>
             </div>
-            <div class="view-travel-history">
-                <a href="#">View travel history</a>
+            <div class="progress-bar">
+                <div class="step active">
+                    <div class="step-icon"><i class="fas fa-box"></i></div>
+                    <div class="step-label" id="stepFrom">From</div>
+                </div>
+                <div class="step active">
+                    <div class="step-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="step-label" id="stepReceived">Received</div>
+                </div>
+                <div class="step active">
+                    <div class="step-icon"><i class="fas fa-truck"></i></div>
+                    <div class="step-label" id="transitDetails">In Transit</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-shipping-fast"></i></div>
+                    <div class="step-label" id="stepOutForDelivery">Out for Delivery</div>
+                </div>
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-home"></i></div>
+                    <div class="step-label" id="stepTo">To</div>
+                </div>
+            </div>
+            <div id="alertSuccess" class="alert alert-success">
+                <strong>Alert:</strong> <span id="alertInfo"></span>
+            </div>
+            <div class="travel-history">
+                <a href="#">View Travel History</a>
             </div>
         </main>
     </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
+            authDomain: "unique-logistix.firebaseapp.com",
+            databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
+            projectId: "unique-logistix",
+            storageBucket: "unique-logistix.appspot.com",
+            messagingSenderId: "820421076514",
+            appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
+            measurementId: "G-6Q2RY0LM09"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        function getTrackingIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('trackingId');
+        }
+
+        const trackingId = getTrackingIdFromURL();
+
+        function updateTrackingInfo() {
+            const dbRef = ref(db, 'shipments/' + trackingId);
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate || 'Pending';
+                    document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
+                    document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
+                    document.getElementById('stepFrom').textContent = data.source || 'From';
+                    document.getElementById('stepReceived').textContent = 'Received';
+                    document.getElementById('transitDetails').textContent = 'In Transit';
+                    document.getElementById('stepOutForDelivery').textContent = 'Out for Delivery';
+                    document.getElementById('stepTo').textContent = data.destination || 'To';
+                    document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
+
+                    // Update progress bar based on status
+                    const steps = ['stepFrom', 'stepReceived', 'transitDetails', 'stepOutForDelivery', 'stepTo'];
+                    const currentStep = steps.indexOf(data.status) + 1;
+                    steps.forEach((step, index) => {
+                        const element = document.getElementById(step).parentElement;
+                        if (index < currentStep) {
+                            element.classList.add('active');
+                        } else {
+                            element.classList.remove('active');
+                        }
+                    });
+
+                    // Show/hide alert
+                    document.getElementById('alertSuccess').style.display = data.alert ? 'block' : 'none';
+                } else {
+                    console.log('No data available');
+                }
+            }).catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        if (trackingId) {
+            updateTrackingInfo();
+        } else {
+            console.error('No tracking ID provided');
+        }
+    </script>
 </body>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
-        authDomain: "unique-logistix.firebaseapp.com",
-        databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
-        projectId: "unique-logistix",
-        storageBucket: "unique-logistix.appspot.com",
-        messagingSenderId: "820421076514",
-        appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
-        measurementId: "G-6Q2RY0LM09"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase();
-
-    // Function to get the tracking ID from the URL
-    function getTrackingIdFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('trackingId');
-    }
-
-    const trackingId = getTrackingIdFromURL(); // Get the tracking ID from the URL
-
-    function updateTrackingInfo() {
-        const dbRef = ref(db, 'shipments/' + trackingId);
-        get(dbRef).then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-
-                // Update DOM elements with Firebase data
-                document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate || 'Pending';
-                document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
-                document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
-                document.getElementById('stepFrom').textContent = `From: ${data.source || 'Unknown'}`;
-                document.getElementById('stepReceived').textContent = `Package received by ${data.carrier || 'Carrier'}`;
-                document.getElementById('transitDetails').innerHTML = `In Transit: ${data.currentLocation || 'Unknown'}<br>${data.lastUpdate || 'Enroute'}`;
-                document.getElementById('stepOutForDelivery').textContent = `Out for Delivery: ${data.expectedDelivery || 'Pending'}`;
-                document.getElementById('stepTo').textContent = `To: ${data.destination || 'Unknown'}`;
-                document.getElementById('scheduledDate').textContent = `Scheduled Delivery Date: ${data.dispatchDate || 'Pending'}`;
-                document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
-
-                // Show/hide alert sections based on data
-                // document.getElementById('alertSuccess').style.display = data.alert === 'success' ? 'block' : 'none';
-                // document.getElementById('alertDanger').style.display = data.alert === 'danger' ? 'block' : 'none';
-            } else {
-                console.log('No data available');
-            }
-        }).catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-    }
-
-    if (trackingId) {
-        updateTrackingInfo();
-    } else {
-        console.error('No tracking ID provided');
-    }
-</script>
-
 </html>

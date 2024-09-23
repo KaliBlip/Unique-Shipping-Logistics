@@ -103,17 +103,18 @@
                                     </div>
                                 </div> -->
 
-                    <div class="row uphny-w3l-newsletter align-items-center">
-                        <div class="col-lg-6 w3l-newsletter-form ps-lg-5 mt-lg-0 mt-md-5 mt-4">
-                            <form id="trackingForm" class="subscribe-wthree">
-                                <div class="flex-wrap subscribe-wthree-field">
-                                    <input class="form-control" type="text" id="trackingCode"
-                                        placeholder="Tracking Code" required>
-                                    <button type="submit" class="btn btn-style btn-primary">Track</button>
+                                <div class="row uphny-w3l-newsletter align-items-center">
+                                    <div class="col-lg-6 w3l-newsletter-form ps-lg-5 mt-lg-0 mt-md-5 mt-4">
+                                        <form id="trackingForm" class="subscribe-wthree">
+                                            <div class="flex-wrap subscribe-wthree-field">
+                                                <input class="form-control" type="text" id="trackingCode"
+                                                       placeholder="Tracking Code" required>
+                                                <button type="submit" class="btn btn-style btn-primary">Track</button>
+                                            </div>
+                                        </form>
+                                        <div id="errorMessage" class="error-message" style="color: red; margin-top: 10px; display: none;"></div>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
 
 
                 </div>
@@ -589,15 +590,56 @@
     </footer>
     <!--//footer-9 -->
 
-    <script>
-        document.getElementById('trackingForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent form from submitting normally
-            const trackingCode = document.getElementById('trackingCode').value;
-            if (trackingCode) {
-                window.location.href = `/modernTrack.html?trackingId=${trackingCode}`;
-            }
-        });
-    </script>
+   <!-- JavaScript -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAOOj86UOijPcIzB3AgsiGzmMDun-nditA",
+        authDomain: "unique-logistix.firebaseapp.com",
+        databaseURL: "https://unique-logistix-default-rtdb.firebaseio.com",
+        projectId: "unique-logistix",
+        storageBucket: "unique-logistix.appspot.com",
+        messagingSenderId: "820421076514",
+        appId: "1:820421076514:web:8776f14e9c78ff5db78c7b",
+        measurementId: "G-6Q2RY0LM09"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+
+    document.getElementById('trackingForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from submitting normally
+        const trackingCode = document.getElementById('trackingCode').value;
+        const errorMessage = document.getElementById('errorMessage');
+        
+        if (trackingCode) {
+            // Check if the tracking code exists in the database
+            const trackingRef = ref(db, 'shipments/' + trackingCode);
+            get(trackingRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    // Tracking code exists, redirect to tracking page
+                    window.location.href = `/modernTrack.html?trackingId=${trackingCode}`;
+                } else {
+                    // Tracking code doesn't exist, show error message
+                    errorMessage.textContent = "Invalid tracking code. Please try again.";
+                    errorMessage.style.display = "block";
+                }
+            }).catch((error) => {
+                console.error(error);
+                errorMessage.textContent = "An error occurred. Please try again later.";
+                errorMessage.style.display = "block";
+            });
+        } else {
+            errorMessage.textContent = "Please enter a tracking code.";
+            errorMessage.style.display = "block";
+        }
+    });
+</script>
 
 
 

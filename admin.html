@@ -111,9 +111,11 @@
                 <div class="form-group col-md-4">
                     <label for="StatusInp"><i class="fas fa-info-circle mr-2"></i>Status</label>
                     <select class="form-control" id="StatusInp">
-                        <option value="Pending">Pending</option>
+                        <option value="Source">Pending</option>
+                        <option value="Recieved">Recieved</option>
                         <option value="In Transit">In Transit</option>
-                        <option value="Delivered">Delivered</option>
+                        <option value="Delivery">Out for Delivery</option>
+                        <option value="Destination">Destination</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
@@ -130,6 +132,7 @@
                     <label for="CurrentLocationInp"><i class="fas fa-map-pin mr-2"></i>Current Location</label>
                     <input type="text" class="form-control" id="CurrentLocationInp"
                         placeholder="Enter current location">
+                        
                 </div>
                 <div class="form-group col-md-6">
                     <label for="LastUpdateInp"><i class="fas fa-clock mr-2"></i>Last Update</label>
@@ -178,8 +181,55 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase();
 
-        // The rest of the JavaScript code remains the same
-        // ... (AddData, RetData, UpdateData, DeleteData functions and event listeners)
+        function getTrackingIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('trackingId');
+        }
+
+        const trackingId = getTrackingIdFromURL();
+
+        function updateTrackingInfo() {
+            const dbRef = ref(db, 'shipments/' + trackingId);
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('scheduledDeliveryDate').textContent = data.dispatchDate || 'Pending';
+                    document.getElementById('deliveryStatus').textContent = data.status || 'In Transit';
+                    document.getElementById('trackingId').textContent = data.trackingId || '123456789012';
+                    document.getElementById('stepFrom').textContent = data.source || 'From';
+                    document.getElementById('stepReceived').textContent = 'Received';
+                    document.getElementById('transitDetails').textContent = 'In Transit';
+                    document.getElementById('stepOutForDelivery').textContent = 'Out for Delivery';
+                    document.getElementById('stepTo').textContent = data.destination || 'To';
+                    document.getElementById('alertInfo').textContent = data.alert || 'No alerts available';
+
+                    // Update progress bar based on status
+                    const steps = ['stepFrom', 'stepReceived', 'transitDetails', 'stepOutForDelivery', 'stepTo'];
+                    const currentStep = steps.indexOf(data.status) + 1;
+                    steps.forEach((step, index) => {
+                        const element = document.getElementById(step).parentElement;
+                        if (index < currentStep) {
+                            element.classList.add('active');
+                        } else {
+                            element.classList.remove('active');
+                        }
+                    });
+
+                    // Show/hide alert
+                    document.getElementById('alertSuccess').style.display = data.alert ? 'block' : 'none';
+                } else {
+                    console.log('No data available');
+                }
+            }).catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        if (trackingId) {
+            updateTrackingInfo();
+        } else {
+            console.error('No tracking ID provided');
+        }
     </script>
 </body>
 
